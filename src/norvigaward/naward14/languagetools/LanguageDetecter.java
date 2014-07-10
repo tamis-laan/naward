@@ -2,10 +2,16 @@ package norvigaward.naward14.languagetools;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
+import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jwat.common.HeaderLine;
+import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
 import org.jwat.warc.WarcRecord;
@@ -308,18 +314,28 @@ public class LanguageDetecter
 		return map;
 	}
 	
-	public String getLang(WarcRecord record)
+	public String getLang(WarcRecord record) throws IOException
 	{
-		try{
-			HeaderLine URI = record.getHeader("WARC-Target-URI");
-			if(URI!=null)
-			{
-				detector.append(URI.value);
-				return detector.detect();
+		String lang = "?";
+		Payload payload = record.getPayload();
+		if (payload == null) {
+		} else {
+			String warcContent = IOUtils.toString(payload.getInputStreamComplete());
+			if (warcContent == null && "".equals(warcContent)) {
+				// NOP
+			} else {
+				Document doc = Jsoup.parse(warcContent);
+				try{
+					HeaderLine URI = record.getHeader("WARC-Target-URI");
+					if(URI!=null)
+					{
+						detector.append(doc.body().text());
+						lang =  detector.detect();
+					}
+				} catch(Exception e){e.printStackTrace();return "?";}
 			}
-			else
-				return "?";
-		}catch(Exception e){e.printStackTrace();return "?";}
+		}
+		return lang;
 		
 //		try {
 //			String lang = "UNKNOWN";
