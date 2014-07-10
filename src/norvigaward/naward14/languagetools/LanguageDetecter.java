@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.regex.Pattern;
+import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jwat.common.HeaderLine;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
@@ -29,7 +31,15 @@ public class LanguageDetecter
 	{
 //		domain_map = loadDomainMap();
 		try {
-			DetectorFactory.loadProfile("/profiles");
+			InputStream is = getClass().getResourceAsStream("profiles");
+			Scanner sc = new Scanner(is);
+			ArrayList<String> res = new ArrayList<String>();
+			while(sc.hasNext()) {
+				String s = sc.next();
+				InputStream is2 = getClass().getResourceAsStream("profiles/"+s);
+				res.add(IOUtils.toString(is2));
+			}
+			DetectorFactory.loadProfile(res);
 			detector = DetectorFactory.create();
 		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}

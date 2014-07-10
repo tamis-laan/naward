@@ -127,6 +127,7 @@
 				<directory>${basedir}/src</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
+					<exclude>**/*.warc</exclude>
 				</excludes>
 			</resource>
 
