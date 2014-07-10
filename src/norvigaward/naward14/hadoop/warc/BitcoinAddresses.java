@@ -43,9 +43,11 @@ public class BitcoinAddresses extends Configured implements Tool {
 
 		job.setMapperClass(AddressExtracter.class);
 		job.setReducerClass(DuplicateRemover.class);
+		
 		job.setInputFormatClass(WarcSequenceFileInputFormat.class);
+		
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(IntWritable.class);
+		job.setOutputValueClass(Text.class);
 
 		// Execute job and return status
 		return job.waitForCompletion(true) ? 0 : 1;
