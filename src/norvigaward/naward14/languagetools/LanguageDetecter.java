@@ -5,10 +5,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jwat.common.HeaderLine;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
@@ -324,13 +326,8 @@ public class LanguageDetecter
 			} else {
 				Document doc = Jsoup.parse(warcContent);
 				try{
-					/*HeaderLine URI = record.getHeader("WARC-Target-URI");
-					if(URI!=null)
-					{*/
 						detector.append(doc.body().text());
 						lang =  detector.detect();
-						System.out.println("YOLO IK BEN ER");
-					//}
 				} catch(Exception e){e.printStackTrace();}
 			}
 		}
