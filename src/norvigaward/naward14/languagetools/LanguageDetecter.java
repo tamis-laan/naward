@@ -14,10 +14,15 @@ import org.jwat.warc.WarcRecord;
 public class LanguageDetecter 
 {
 	HashMap<String,String> domain_map;
+	Detector detector; 
 	
-	public LanguageDetecter()
+	public LanguageDetector()
 	{
-		domain_map = loadDomainMap();
+//		domain_map = loadDomainMap();
+		try {
+			DetectorFactory.loadProfile("./profiles");
+			detector = DetectorFactory.create();
+		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}
 
 	private HashMap<String,String>loadDomainMap()
@@ -302,16 +307,36 @@ public class LanguageDetecter
 	
 	public String getLang(WarcRecord record)
 	{
-		HeaderLine URI = record.getHeader("WARC-Target-URI");
-		if(URI!=null)
-			for(String key : domain_map.keySet())
-				if(URI.value.contains(key+"/"))
-					return domain_map.get(key);
-		return "UNKNOWN";
+		try{
+			HeaderLine URI = record.getHeader("WARC-Target-URI");
+			if(URI!=null)
+			{
+				detector.append(URI.value);
+				return detector.detect();
+			}
+			else
+				return "?";
+		}catch(Exception e){e.printStackTrace();return "?";}
+		
+//		try {
+//			String lang = "UNKNOWN";
+//			HeaderLine URI = record.getHeader("WARC-Target-URI");
+//			if(URI!=null)
+//				for(String key : domain_map.keySet())
+//					if(URI.value.contains(key+"/"))
+//						lang = domain_map.get(key);
+//			if(lang.equals("UNKNOWN") && URI!=null)
+//			{
+//				System.out.println(URI.value);
+//				detector.append(URI.value);
+//				lang = detector.detect();
+//			}
+//			return lang;
+//		} catch (LangDetectException e) {System.out.println("Language detection failed error: 02");e.printStackTrace();return "ERROR 02";}
 	}
 	
 	public static void main(String[] args) {
-		LanguageDetecter ld = new LanguageDetecter();
+		LanguageDetector ld = new LanguageDetector();
 			try {
 				File file = new File("./example.warc");
 				InputStream in = new FileInputStream(file);
