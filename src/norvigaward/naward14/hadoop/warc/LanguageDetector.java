@@ -1,4 +1,4 @@
-package warc_test;
+package norvigaward.naward14.hadoop.warc;
 
 import java.io.BufferedReader;
 import java.io.File;
