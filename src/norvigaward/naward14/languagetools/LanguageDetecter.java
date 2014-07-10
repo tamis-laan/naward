@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/norvigaward/naward14/hadoop/warc/LanguageDetector.java
+package norvigaward.naward14.hadoop.warc;
+=======
 package norvigaward.naward14.languagetools;
+>>>>>>> 07b9d0921b68a1534f690178a56372a165739471:src/norvigaward/naward14/languagetools/LanguageDetecter.java
 
 import java.io.File;
 import java.io.FileInputStream;
