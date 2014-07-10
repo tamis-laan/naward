@@ -4,15 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jwat.common.HttpHeader;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
@@ -325,42 +323,15 @@ public class LanguageDetecter
 		return map;
 	}
 	
-	public String getLang(WarcRecord record) throws IOException, LangDetectException
+	public String getLang(Document doc) throws IOException, LangDetectException
 	{
-		detector = DetectorFactory.create();
 		String lang = "?";
-		Payload payload = record.getPayload();
-		if (payload == null) {
-		} else {
-			String warcContent = IOUtils.toString(payload.getInputStreamComplete());
-			if (warcContent == null && "".equals(warcContent)) {
-				// NOP
-			} else {
-				Document doc = Jsoup.parse(warcContent);
-				try{
-					System.out.println("CLASSIFYING BODY:" + doc.body().text());
-					detector.append(doc.body().text());
-					lang =  detector.detect();
-				} catch(Exception e){e.printStackTrace();}
-			}
-		}
+		detector = DetectorFactory.create();
+		try{
+			detector.append(doc.body().text());
+			lang =  detector.detect();
+		} catch(Exception e){e.printStackTrace();}
 		return lang;
-		
-//		try {
-//			String lang = "UNKNOWN";
-//			HeaderLine URI = record.getHeader("WARC-Target-URI");
-//			if(URI!=null)
-//				for(String key : domain_map.keySet())
-//					if(URI.value.contains(key+"/"))
-//						lang = domain_map.get(key);
-//			if(lang.equals("UNKNOWN") && URI!=null)
-//			{
-//				System.out.println(URI.value);
-//				detector.append(URI.value);
-//				lang = detector.detect();
-//			}
-//			return lang;
-//		} catch (LangDetectException e) {System.out.println("Language detection failed error: 02");e.printStackTrace();return "ERROR 02";}
 	}
 	
 	public static void main(String[] args) {
@@ -370,8 +341,27 @@ public class LanguageDetecter
 				InputStream in = new FileInputStream(file);
 				WarcReader reader = WarcReaderFactory.getReader(in);
 				WarcRecord record;
-				while((record = reader.getNextRecord()) != null)
-					System.out.println(ld.getLang(record));
+				while((record = reader.getNextRecord()) != null) {
+					HttpHeader httpHeader = record.getHttpHeader();
+					if (httpHeader == null) {
+						// No header so we are unsure that the content is text/html: NOP
+					} else {
+						if (httpHeader.contentType != null && httpHeader.contentType.contains("text/html")) {
+							Payload payload = record.getPayload();
+							if (payload == null) {
+							} else {
+								String warcContent = IOUtils.toString(payload.getInputStreamComplete());
+								if (warcContent == null && "".equals(warcContent)) {
+									// NOP
+								} else {
+									Document doc = Jsoup.parse(warcContent);
+									System.out.println(ld.getLang(doc));
+									System.out.println(ld.getLang(doc));
+								}
+							}
+						}
+					}
+				}
 			}
 			catch(Exception e){e.printStackTrace();}
 	}

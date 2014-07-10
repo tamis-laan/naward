@@ -17,14 +17,19 @@ package norvigaward.naward14.hadoop.warc;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import norvigaward.naward14.bitcoinutils.BitcoinAddressFinder;
 import norvigaward.naward14.languagetools.LanguageDetecter;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jwat.common.HttpHeader;
+import org.jwat.common.Payload;
 import org.jwat.warc.WarcRecord;
 
 import com.cybozu.labs.langdetect.LangDetectException;
@@ -52,16 +57,26 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 			} else {
 				if (httpHeader.contentType != null && httpHeader.contentType.contains("text/html")) {
 					context.getCounter(Counters.NUM_HTTP_RESPONSE_RECORDS).increment(1);
-					Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(value);
-					if(!addresses.isEmpty()) {
-						String lang = "?";
-						try {
-							lang = ld.getLang(value);
-						} catch (LangDetectException e) {
-							e.printStackTrace();
-						}
-						for(String a : addresses) {
-							context.write(new Text(lang), new Text(a));
+					Payload payload = value.getPayload();
+					if (payload == null) {
+					} else {
+						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
+						if (warcContent == null && "".equals(warcContent)) {
+							// NOP
+						} else {
+							Document doc = Jsoup.parse(warcContent);
+							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(doc);
+							if(!addresses.isEmpty()) {
+								String lang = "?";
+								try {
+									lang = ld.getLang(doc);
+								} catch (LangDetectException e) {
+									e.printStackTrace();
+								}
+								for(String a : addresses) {
+									context.write(new Text(lang), new Text(a));
+								}
+							}
 						}
 					}
 				}

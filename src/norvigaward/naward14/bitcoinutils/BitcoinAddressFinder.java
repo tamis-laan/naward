@@ -22,46 +22,35 @@ public class BitcoinAddressFinder {
 	 * @return Collection of Strings that represent valid bitcoin addresses
 	 * @throws IOException 
 	 */
-	public static Collection<String> findBitcoinAddresses(WarcRecord value) throws IOException
+	public static Collection<String> findBitcoinAddresses(Document doc) throws IOException
 	{
 		HashSet<String> res = new HashSet<String>();
-		Payload payload = value.getPayload();
-		if (payload == null) {
-		} else {
-			String warcContent = IOUtils.toString(payload.getInputStreamComplete());
-			if (warcContent == null && "".equals(warcContent)) {
-				// NOP
-			} else {
-				// Pattern for matching addresses in bitcoin URLs
-				Pattern bcpattern = Pattern.compile("(?i)bitcoin: *([a-z0-9]+)");
-				Document doc = Jsoup.parse(warcContent);
-				Elements links = doc.select("a");
-				for (Element link : links) {
-					// Find addresses in bitcoin URLs
-					Matcher m = bcpattern.matcher(link.attr("href"));
-					if(m.find()) {
-						if(BitcoinAddressValidator.validateAddress(m.group(1))) {
-							res.add(m.group(1));
-						}
-					}
-					// Find addresses in text of bitcoin URLs
-					m = bcpattern.matcher(link.text());
-					if (m.find()) {
-						if(BitcoinAddressValidator.validateAddress(m.group(1))) {
-							res.add(m.group(1));
-						}
-					}
-					if (BitcoinAddressValidator.validateAddress(link.text())) {
-						res.add(link.text());
-					}
+		Pattern bcpattern = Pattern.compile("(?i)bitcoin: *([a-z0-9]+)");
+		Elements links = doc.select("a");
+		for (Element link : links) {
+			// Find addresses in bitcoin URLs
+			Matcher m = bcpattern.matcher(link.attr("href"));
+			if(m.find()) {
+				if(BitcoinAddressValidator.validateAddress(m.group(1))) {
+					res.add(m.group(1));
 				}
-				// Search all words in the body (separated by spaces) for valid bitcoin addresses
-				String[] bodywords = doc.body().text().split(" ");
-				for (String w : bodywords) {
-					if(BitcoinAddressValidator.validateAddress(w)) {
-						res.add(w);
-					}
+			}
+			// Find addresses in text of bitcoin URLs
+			m = bcpattern.matcher(link.text());
+			if (m.find()) {
+				if(BitcoinAddressValidator.validateAddress(m.group(1))) {
+					res.add(m.group(1));
 				}
+			}
+			if (BitcoinAddressValidator.validateAddress(link.text())) {
+				res.add(link.text());
+			}
+		}
+		// Search all words in the body (separated by spaces) for valid bitcoin addresses
+		String[] bodywords = doc.body().text().split(" ");
+		for (String w : bodywords) {
+			if(BitcoinAddressValidator.validateAddress(w)) {
+				res.add(w);
 			}
 		}
 		return res;
