@@ -10,13 +10,16 @@ import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
 import org.jwat.warc.WarcRecord;
 
+import com.cybozu.labs.langdetect.Detector;
+import com.cybozu.labs.langdetect.DetectorFactory;
+
 
 public class LanguageDetecter 
 {
 	HashMap<String,String> domain_map;
 	Detector detector; 
 	
-	public LanguageDetector()
+	public LanguageDetecter()
 	{
 //		domain_map = loadDomainMap();
 		try {
@@ -336,7 +339,7 @@ public class LanguageDetecter
 	}
 	
 	public static void main(String[] args) {
-		LanguageDetector ld = new LanguageDetector();
+		LanguageDetecter ld = new LanguageDetecter();
 			try {
 				File file = new File("./example.warc");
 				InputStream in = new FileInputStream(file);
