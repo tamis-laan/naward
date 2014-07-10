@@ -20,6 +20,7 @@ import org.jwat.warc.WarcRecord;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
+import com.cybozu.labs.langdetect.LangDetectException;
 
 
 public class LanguageDetecter 
@@ -41,7 +42,6 @@ public class LanguageDetecter
 				is2.close();
 			}
 			DetectorFactory.loadProfile(res);
-			detector = DetectorFactory.create();
 		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}
 
@@ -325,8 +325,9 @@ public class LanguageDetecter
 		return map;
 	}
 	
-	public String getLang(WarcRecord record) throws IOException
+	public String getLang(WarcRecord record) throws IOException, LangDetectException
 	{
+		detector = DetectorFactory.create();
 		String lang = "?";
 		Payload payload = record.getPayload();
 		if (payload == null) {

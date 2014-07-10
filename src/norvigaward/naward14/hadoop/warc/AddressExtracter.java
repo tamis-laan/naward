@@ -27,6 +27,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.jwat.common.HttpHeader;
 import org.jwat.warc.WarcRecord;
 
+import com.cybozu.labs.langdetect.LangDetectException;
+
 /**
  * Map function that from a WarcRecord extracts all links. The resulting key,
  * values: page URL, link.
@@ -52,7 +54,12 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 					context.getCounter(Counters.NUM_HTTP_RESPONSE_RECORDS).increment(1);
 					Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(value);
 					if(!addresses.isEmpty()) {
-						String lang = ld.getLang(value);
+						String lang = "?";
+						try {
+							lang = ld.getLang(value);
+						} catch (LangDetectException e) {
+							e.printStackTrace();
+						}
 						for(String a : addresses) {
 							context.write(new Text(lang), new Text(a));
 						}
