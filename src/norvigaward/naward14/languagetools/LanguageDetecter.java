@@ -26,18 +26,19 @@ public class LanguageDetecter
 {
 	HashMap<String,String> domain_map;
 	Detector detector; 
+	private String[] langs = {"af", "ar", "bg", "bn", "cs", "da", "de", "el", "en", "es", "et", "fa", "fi", "fr", "gu", "he", "hi", "hr", "hu",
+								"id", "it", "ja", "kn", "ko", "lt", "lv", "mk", "ml", "mr", "ne", "nl", "no", "pa", "pl", "pt", "ro", "sk", "sl",
+								"so", "sq", "sv", "sw", "ta", "te", "th", "tl", "tr", "uk", "ur", "vi", "zh-cn", "zh-tw" };
 	
 	public LanguageDetecter()
 	{
 //		domain_map = loadDomainMap();
 		try {
-			InputStream is = getClass().getResourceAsStream("profiles");
-			Scanner sc = new Scanner(is);
 			ArrayList<String> res = new ArrayList<String>();
-			while(sc.hasNext()) {
-				String s = sc.next();
-				InputStream is2 = getClass().getResourceAsStream("profiles/"+s);
-				res.add(IOUtils.toString(is2));
+			for(String lang : langs) {
+				InputStream is2 = getClass().getResourceAsStream("profiles/"+lang);
+				res.add(IOUtils.toString(is2, "UTF-8"));
+				is2.close();
 			}
 			DetectorFactory.loadProfile(res);
 			detector = DetectorFactory.create();
