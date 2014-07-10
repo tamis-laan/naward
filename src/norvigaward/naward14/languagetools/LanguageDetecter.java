@@ -29,7 +29,7 @@ public class LanguageDetecter
 	{
 //		domain_map = loadDomainMap();
 		try {
-			DetectorFactory.loadProfile("./profiles");
+			DetectorFactory.loadProfile("/profiles");
 			detector = DetectorFactory.create();
 		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}
@@ -326,13 +326,9 @@ public class LanguageDetecter
 			} else {
 				Document doc = Jsoup.parse(warcContent);
 				try{
-					HeaderLine URI = record.getHeader("WARC-Target-URI");
-					if(URI!=null)
-					{
 						detector.append(doc.body().text());
 						lang =  detector.detect();
-					}
-				} catch(Exception e){e.printStackTrace();return "?";}
+				} catch(Exception e){e.printStackTrace();}
 			}
 		}
 		return lang;
