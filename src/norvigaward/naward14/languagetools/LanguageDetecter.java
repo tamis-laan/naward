@@ -5,12 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jwat.common.HeaderLine;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
 import org.jwat.warc.WarcReaderFactory;
@@ -29,7 +27,7 @@ public class LanguageDetecter
 	{
 //		domain_map = loadDomainMap();
 		try {
-			DetectorFactory.loadProfile("./profiles");
+			DetectorFactory.loadProfile("/profiles");
 			detector = DetectorFactory.create();
 		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}
@@ -326,13 +324,14 @@ public class LanguageDetecter
 			} else {
 				Document doc = Jsoup.parse(warcContent);
 				try{
-					HeaderLine URI = record.getHeader("WARC-Target-URI");
+					/*HeaderLine URI = record.getHeader("WARC-Target-URI");
 					if(URI!=null)
-					{
+					{*/
 						detector.append(doc.body().text());
 						lang =  detector.detect();
-					}
-				} catch(Exception e){e.printStackTrace();return "?";}
+						System.out.println("YOLO IK BEN ER");
+					//}
+				} catch(Exception e){e.printStackTrace();}
 			}
 		}
 		return lang;
