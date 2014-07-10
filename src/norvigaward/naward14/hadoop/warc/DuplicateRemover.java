@@ -3,6 +3,8 @@ package norvigaward.naward14.hadoop.warc;
 import java.io.IOException;
 import java.util.HashSet;
 
+import norvigaward.naward14.bitcoinutils.BitcoinAddressBalanceChecker;
+
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -20,7 +22,7 @@ public class DuplicateRemover extends Reducer<Text, Text, Text, Text> {
 		// merge into a result string for this country
 		String merge = "";
 		for (String s : addresses) {
-			merge += ", " + s;
+			merge += ", (" + s + ":" + BitcoinAddressBalanceChecker.getBalance(s) + ")";
 		}
 		
 		out.set(merge);

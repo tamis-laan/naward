@@ -10,7 +10,7 @@ public class BitcoinAddressBalanceChecker {
 	
 	private static String BalanceAPI = "https://blockchain.info/q/addressbalance/"; //1N6HNyB28SnPmdeJg6qGsYsXHcfDi9Qweb
 	
-	public double getBalance(String address) {
+	public static double getBalance(String address) {
 		double balance = 0;
 		try {
 			URL url = new URL(BalanceAPI + address);
