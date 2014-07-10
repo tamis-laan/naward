@@ -338,9 +338,9 @@ public class LanguageDetecter
 			} else {
 				Document doc = Jsoup.parse(warcContent);
 				try{
-						detector.append(doc.body().text());
-						lang =  detector.detect();
-				} catch(Exception e){e.printStackTrace();}
+					detector.append(doc.body().text());
+					lang =  detector.detect();
+				} catch(Exception e){e.printStackTrace(); System.out.println(doc.body().text());}
 			}
 		}
 		return lang;
