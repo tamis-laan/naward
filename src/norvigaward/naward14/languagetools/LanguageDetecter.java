@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jwat.common.HeaderLine;
 import org.jwat.common.HttpHeader;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcReader;
@@ -372,9 +373,8 @@ public class LanguageDetecter
 									// NOP
 								} else {
 									Document doc = Jsoup.parse(warcContent);
-									System.out.println("BASE " + record.getHttpHeader().requestUri);
-									//System.out.println(ld.getLang(doc));
-									//System.out.println(ld.getLang(doc));
+									System.out.println(ld.getLang(doc));
+									System.out.println(ld.getLang(doc));
 								}
 							}
 						}
