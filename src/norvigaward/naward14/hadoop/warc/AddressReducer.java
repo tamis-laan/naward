@@ -17,24 +17,24 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		String address = key.toString();
 		
 		HashMap<String, Integer> langs = new HashMap<String, Integer>();
-		HashMap<String, Integer> exts = new HashMap<String, Integer>();
+		HashMap<String, Integer> countries = new HashMap<String, Integer>();
 		
 		for(Text t : values) {
 			String s = t.toString();
 			// count domain extensions of pages where address was found
-			if(s.contains("ext:")) {
-				String ext = s.split("ext:")[1];
-				Integer n = exts.get(ext);
+			if(s.contains("country:")) {
+				String ext = s.split("country:")[1];
+				Integer n = countries.get(ext);
 				if(n == null) {
 					n = 0;
 				}
 				n++;
-				exts.put(ext, n);
+				countries.put(ext, n);
 			}
 			// count detected languages of pages where address was found
-			if(s.contains("lang:")) {
-				String lang = s.split("lang:")[1];
-				Integer n = exts.get(lang);
+			if(s.contains("language:")) {
+				String lang = s.split("language:")[1];
+				Integer n = countries.get(lang);
 				if(n == null) {
 					n = 0;
 				}
@@ -47,9 +47,14 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		j.put("address", address);
 		j.put("balance", BitcoinAddressBalanceChecker.getBalance(address));
 		j.put("langs", new JSONObject(langs));
-		j.put("exts", new JSONObject(exts));
+		j.put("exts", new JSONObject(countries));
 		
 		out.set(j.toString());
 		context.write(key, out);
+	}
+	
+	public static void main(String[] args) {
+		String t = "lang:trolll";
+		System.out.println(t.split("lang:")[1]);
 	}
 }
