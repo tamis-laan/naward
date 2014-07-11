@@ -54,14 +54,13 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		BigDecimal received = new BigDecimal(BitcoinAddressBalanceChecker.getReceived(address));
 		
 		JSONObject j = new JSONObject();
-		j.put("address", address);
 		j.put("balance", balance.toPlainString());
 		j.put("sent", sent.toPlainString());
 		j.put("received", received.toPlainString());
 		j.put("langs", new JSONObject(langs));
 		j.put("countries", new JSONObject(countries));
 		
-		out.set(address + ":" + j.toString() + ",");
+		out.set("\"" + address + "\":" + j.toString() + ",");
 		context.write(new Text(""), out);
 	}
 }
