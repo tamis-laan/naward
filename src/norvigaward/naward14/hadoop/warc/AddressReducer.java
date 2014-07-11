@@ -1,6 +1,8 @@
 package norvigaward.naward14.hadoop.warc;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import norvigaward.naward14.bitcoinutils.BitcoinAddressBalanceChecker;
@@ -47,18 +49,19 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 			}
 		}
 		
+		BigDecimal balance = new BigDecimal(BitcoinAddressBalanceChecker.getBalance(address));
+		BigDecimal sent = new BigDecimal(BitcoinAddressBalanceChecker.getSent(address));
+		BigDecimal received = new BigDecimal(BitcoinAddressBalanceChecker.getReceived(address));
+		
 		JSONObject j = new JSONObject();
 		j.put("address", address);
-		j.put("balance", BitcoinAddressBalanceChecker.getBalance(address));
+		j.put("balance", balance.toPlainString());
+		j.put("sent", sent.toPlainString());
+		j.put("received", received.toPlainString());
 		j.put("langs", new JSONObject(langs));
-		j.put("exts", new JSONObject(countries));
+		j.put("countries", new JSONObject(countries));
 		
 		out.set(j.toString());
 		context.write(new Text(""), out);
-	}
-	
-	public static void main(String[] args) {
-		String t = "lang:trolll";
-		System.out.println(t.split("lang:")[1]);
 	}
 }
