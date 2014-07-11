@@ -42,6 +42,7 @@ public class BitcoinAddresses extends Configured implements Tool {
 
 		job.setMapperClass(AddressExtracter.class);
 		job.setReducerClass(AddressReducer.class);
+		job.setNumReduceTasks(40);
 		
 		job.setInputFormatClass(WarcSequenceFileInputFormat.class);
 		
