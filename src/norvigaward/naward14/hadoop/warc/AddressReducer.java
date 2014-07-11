@@ -61,7 +61,7 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		j.put("langs", new JSONObject(langs));
 		j.put("countries", new JSONObject(countries));
 		
-		out.set(j.toString());
+		out.set(address + ":" + j.toString() + ",");
 		context.write(new Text(""), out);
 	}
 }
