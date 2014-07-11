@@ -31,7 +31,7 @@ public class LanguageDetecter
 	
 	public LanguageDetecter()
 	{
-//		domain_map = loadDomainMap();
+		domain_map = loadDomainMap();
 		try {
 			ArrayList<String> res = new ArrayList<String>();
 			for(String lang : langs) {
@@ -332,6 +332,23 @@ public class LanguageDetecter
 			lang =  detector.detect();
 		} catch(Exception e){e.printStackTrace();}
 		return lang;
+	}
+
+	public String getCountry(WarcRecord record)
+	{
+		HeaderLine URI = record.getHeader("WARC-Target-URI");
+		if(URI!=null)
+		{
+			String URL = URI.value;
+			String lang = "?";
+			String slash = "\\";
+			for(String key : domain_map.keySet())
+				if( URL.toLowerCase().matches("(https://|http://|dns:)[^/]*"+slash+key+"(/.*|$)") )
+					lang = domain_map.get(key);
+			return lang;
+		}
+		else
+			return "?";
 	}
 	
 	public static void main(String[] args) {
