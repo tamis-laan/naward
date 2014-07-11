@@ -10,7 +10,7 @@ public class BitcoinAddressBalanceChecker {
 	
 	private static String BalanceAPI = "https://blockchain.info/q/addressbalance/";
 	private static String SentAPI = "https://blockchain.info/q/getsentbyaddress/";
-	private static String ReceivedAPI = "https://blockchain.info/q/getreceivedbyaddress";
+	private static String ReceivedAPI = "https://blockchain.info/q/getreceivedbyaddress/";
 	
 	public static double getBalance(String address) {
 		double balance = 0;
