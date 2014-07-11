@@ -17,7 +17,6 @@ package norvigaward.naward14.hadoop.warc;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 import norvigaward.naward14.bitcoinutils.BitcoinAddressFinder;
 import norvigaward.naward14.languagetools.LanguageDetecter;
@@ -74,7 +73,9 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 									e.printStackTrace();
 								}
 								for(String a : addresses) {
-									context.write(new Text(lang), new Text(a));
+									context.write(new Text(a), new Text("ext:"));
+									if(!lang.equals("?"))
+										context.write(new Text(a), new Text("lang:"+lang));
 								}
 							}
 						}

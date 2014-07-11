@@ -355,8 +355,9 @@ public class LanguageDetecter
 									// NOP
 								} else {
 									Document doc = Jsoup.parse(warcContent);
-									System.out.println(ld.getLang(doc));
-									System.out.println(ld.getLang(doc));
+									System.out.println("BASE " + record.getHttpHeader().requestUri);
+									//System.out.println(ld.getLang(doc));
+									//System.out.println(ld.getLang(doc));
 								}
 							}
 						}

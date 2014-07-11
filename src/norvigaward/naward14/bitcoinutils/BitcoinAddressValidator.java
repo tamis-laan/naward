@@ -6,10 +6,15 @@ import com.google.bitcoin.core.NetworkParameters;
 
 public class BitcoinAddressValidator {
 	
+	/**
+	 * Uses the bitcoinj library to validate a Bitcoin address
+	 * @param address
+	 * @return true if the address is valid
+	 */
 	public static boolean validateAddress(String address) {
 		boolean valid = true;
 		try {
-			Address a = new Address(NetworkParameters.prodNet(), address);
+			new Address(NetworkParameters.prodNet(), address);
 		} catch (AddressFormatException e) {
 			valid = false;
 		}

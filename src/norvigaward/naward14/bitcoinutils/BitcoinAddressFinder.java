@@ -17,8 +17,8 @@ import org.jwat.warc.WarcRecord;
 public class BitcoinAddressFinder {
 
 	/**
-	 * Finds for a WarcRecord valid Bitcoin addresses
-	 * @param value WardRecord
+	 * Retrieves valid Bitcoin address from a jsoup web document
+	 * @param value Document (jsoup.nodes.Document)
 	 * @return Collection of Strings that represent valid bitcoin addresses
 	 * @throws IOException 
 	 */
