@@ -24,22 +24,26 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 			// count domain extensions of pages where address was found
 			if(s.contains("country:")) {
 				String ext = s.split("country:")[1];
-				Integer n = countries.get(ext);
-				if(n == null) {
-					n = 0;
+					if(ext.length() == 2) {
+					Integer n = countries.get(ext);
+					if(n == null) {
+						n = 0;
+					}
+					n++;
+					countries.put(ext, n);
 				}
-				n++;
-				countries.put(ext, n);
 			}
 			// count detected languages of pages where address was found
 			if(s.contains("language:")) {
 				String lang = s.split("language:")[1];
-				Integer n = countries.get(lang);
-				if(n == null) {
-					n = 0;
+				if(lang.length() == 2) {
+					Integer n = langs.get(lang);
+					if(n == null) {
+						n = 0;
+					}
+					n++;
+					langs.put(lang, n);
 				}
-				n++;
-				langs.put(lang, n);
 			}
 		}
 		
@@ -50,7 +54,7 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		j.put("exts", new JSONObject(countries));
 		
 		out.set(j.toString());
-		context.write(key, out);
+		context.write(new Text(""), out);
 	}
 	
 	public static void main(String[] args) {

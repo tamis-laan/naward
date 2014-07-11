@@ -75,7 +75,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 								String ext = ld.getCountry(value);
 								for(String a : addresses) {
 									Text addr = new Text(a);
-									if(!lang.equals("") && !lang.equals("UNKNOWN") && !lang.equals("?"))
+									if(!ext.equals("") && !ext.equals("UNKNOWN") && !ext.equals("?"))
 										context.write(addr, new Text("country:"+ext));
 									if(!lang.equals("?") && !lang.equals(""))
 										context.write(addr, new Text("language:"+lang));
