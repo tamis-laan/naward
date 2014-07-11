@@ -186,7 +186,7 @@ public class LanguageDetecter
 		map.put(".kw" , "Kuwait");
 		map.put(".ky" , "Cayman Islands");
 		map.put(".kz" , "Kazakhstan");
-		map.put(".la" , "Lao, People's Democratic Republic");
+		map.put(".la" , "Lao People's Democratic Republic");
 		map.put(".lb" , "Lebanon");
 		map.put(".lc" , "Saint Lucia");
 		map.put(".li" , "Liechtenstein");
