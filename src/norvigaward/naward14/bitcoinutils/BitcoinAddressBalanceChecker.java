@@ -7,6 +7,7 @@ public class BitcoinAddressBalanceChecker {
 	private static String BalanceAPI = "https://blockchain.info/q/addressbalance/";
 	private static String SentAPI = "https://blockchain.info/q/getsentbyaddress/";
 	private static String ReceivedAPI = "https://blockchain.info/q/getreceivedbyaddress/";
+	private static String APIKEY = "?api_code=8c06bbb8-22c1-4a09-8fc0-e65a362b895e";
 	private static int timeout = 1000;
 	
 	public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class BitcoinAddressBalanceChecker {
 	public static double getBalance(String address) {
 		double balance = 0;
 		try {
-			Document doc = Jsoup.connect(BalanceAPI + address)
+			Document doc = Jsoup.connect(BalanceAPI + address + APIKEY)
 					  .userAgent("Mozilla")
 					  .timeout(timeout)
 					  .get();
@@ -30,7 +31,7 @@ public class BitcoinAddressBalanceChecker {
 	public static double getSent(String address) {
 		double balance = 0;
 		try {
-			Document doc = Jsoup.connect(SentAPI + address)
+			Document doc = Jsoup.connect(SentAPI + address + APIKEY)
 					  .userAgent("Mozilla")
 					  .timeout(timeout)
 					  .get();
@@ -44,7 +45,7 @@ public class BitcoinAddressBalanceChecker {
 	public static double getReceived(String address) {
 		double balance = 0;
 		try {
-			Document doc = Jsoup.connect(ReceivedAPI + address)
+			Document doc = Jsoup.connect(ReceivedAPI + address + APIKEY)
 					  .userAgent("Mozilla")
 					  .timeout(timeout)
 					  .get();
