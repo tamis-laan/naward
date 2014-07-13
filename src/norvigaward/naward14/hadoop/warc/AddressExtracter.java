@@ -84,9 +84,6 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 			System.out.println();
 		}
 		
-		if(key.get() == 20393)
-			System.out.println("BERUCHTE RECORD");
-		
 		context.setStatus(Counters.CURRENT_RECORD + ": " + key.get());
 		if ("application/http; msgtype=response".equals(value.header.contentTypeStr)) {
 			HttpHeader httpHeader = value.getHttpHeader();
@@ -100,14 +97,8 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
 						if (warcContent == null && "".equals(warcContent)) {
 						} else {
-							if(key.get() == 20393)
-								System.out.println("BERUCHTE RECORD ENTER");
 							Document doc = Jsoup.parse(warcContent);
-							if(key.get() == 20393)
-								System.out.println("BERUCHTE RECORD PARSED");
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(doc);
-							if(key.get() == 20393)
-								System.out.println("BERUCHTE RECORD ADDRESSES FOUND: " + addresses.size());
 							if(!addresses.isEmpty()) {
 								String lang = "?";
 								try {
@@ -115,13 +106,8 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 								} catch (LangDetectException e) {
 									e.printStackTrace();
 								}
-								if(key.get() == 20393)
-									System.out.println("BERUCHTE RECORD LANG DETECTED");
 
 								String country = ld.getCountry(value);
-								
-								if(key.get() == 20393)
-									System.out.println("BERUCHTE RECORD COUNTRY DETECTED");
 								
 								for(String a : addresses) {
 									Text addr = new Text(a);
@@ -130,9 +116,6 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 									if(!!lang.isEmpty())
 										context.write(addr, new Text("language:"+lang));
 								}
-								
-								if(key.get() == 20393)
-									System.out.println("BERUCHTE RECORD WRITTEN");
 							}
 						}
 					}
