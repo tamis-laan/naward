@@ -22,8 +22,10 @@ import norvigaward.naward14.bitcoinutils.BitcoinAddressFinder;
 import norvigaward.naward14.languagetools.LanguageDetecter;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.FileSplit;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,6 +50,8 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
+		Path path = ((FileSplit) context.getInputSplit()).getPath();
+		System.out.println("CURRENT SPLIT PATH:" + path.toString());
 		context.setStatus(Counters.CURRENT_RECORD + ": " + key.get());
 		if ("application/http; msgtype=response".equals(value.header.contentTypeStr)) {
 			HttpHeader httpHeader = value.getHttpHeader();
