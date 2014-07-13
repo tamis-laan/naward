@@ -121,7 +121,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 									Text addr = new Text(a);
 									if(!country.isEmpty())
 										context.write(addr, new Text("country:"+country));
-									if(!!lang.isEmpty())
+									if(!lang.isEmpty())
 										context.write(addr, new Text("language:"+lang));
 								}
 							}

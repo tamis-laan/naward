@@ -345,9 +345,13 @@ public class LanguageDetecter
 			String URL = URI.value;
 			String lang = "?";
 			String slash = "\\";
+			System.out.println(URL.toLowerCase());
 			for(String key : domain_map.keySet())
-				if( URL.toLowerCase().matches("(https://|http://|dns:)[^/]*"+slash+key+"(/.*|$)") )
+				if( URL.toLowerCase().matches("(https://|http://|dns:)[^/]*"+slash+key+"(/.*|$)") ) {
 					lang = domain_map.get(key);
+					System.out.println(key);
+				}
+					
 			return lang;
 		}
 		else
@@ -375,8 +379,7 @@ public class LanguageDetecter
 									// NOP
 								} else {
 									Document doc = Jsoup.parse(warcContent);
-									System.out.println(ld.getLang(doc));
-									System.out.println(ld.getLang(doc));
+									System.out.println(ld.getCountry(record));
 								}
 							}
 						}
