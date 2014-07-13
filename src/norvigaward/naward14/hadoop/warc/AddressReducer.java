@@ -21,7 +21,6 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 		HashMap<String, Integer> countries = new HashMap<String, Integer>();
 		
 		for(Text t : values) {
-			System.out.println(t.toString());
 			String s = t.toString();
 			// count domain extensions of pages where address was found
 			if(s.contains("country:")) {
@@ -30,7 +29,6 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 				if(n == null) {
 					n = 0;
 				}
-				System.out.println("extracted: " + ext);
 				n++;
 				countries.put(ext, n);
 			}
@@ -41,7 +39,6 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 				if(n == null) {
 					n = 0;
 				}
-				System.out.println("extracted: " + lang);
 				n++;
 				langs.put(lang, n);
 			}
