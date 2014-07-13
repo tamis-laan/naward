@@ -6,13 +6,9 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.jwat.common.Payload;
-import org.jwat.warc.WarcRecord;
 
 public class BitcoinAddressFinder {
 

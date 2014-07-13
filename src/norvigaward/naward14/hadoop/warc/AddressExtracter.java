@@ -47,16 +47,43 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 	}
 	
 	LanguageDetecter ld = new LanguageDetecter();
+    Runtime runtime = Runtime.getRuntime();
+    long tick = 0;
+    long lastkey = 0;
+	
+	private void printMem() {
+        int mb = 1024*1024;
+       
+        System.out.println("##### Heap utilization statistics [MB] #####");
+         
+        //Print used memory
+        System.out.println("Used Memory:"
+            + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+ 
+        //Print free memory
+        System.out.println("Free Memory:"
+            + runtime.freeMemory() / mb);
+         
+        //Print total available memory
+        System.out.println("Total Memory:" + runtime.totalMemory() / mb);
+ 
+        //Print Maximum available memory
+        System.out.println("Max Memory:" + runtime.maxMemory() / mb);
+	}
 
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
-		Path path = ((FileSplit) context.getInputSplit()).getPath();
-		System.out.println("CURRENT SPLIT PATH:" + path.toString());
+		if(key.get() - lastkey > 10000) {
+			lastkey = key.get();
+			printMem();
+			System.out.println("last 1000 maps: " + (System.currentTimeMillis() - tick));
+			tick = System.currentTimeMillis();
+			System.out.println();
+		}
 		context.setStatus(Counters.CURRENT_RECORD + ": " + key.get());
 		if ("application/http; msgtype=response".equals(value.header.contentTypeStr)) {
 			HttpHeader httpHeader = value.getHttpHeader();
 			if (httpHeader == null) {
-				// No header so we are unsure that the content is text/html: NOP
 			} else {
 				if (httpHeader.contentType != null && httpHeader.contentType.contains("text/html")) {
 					context.getCounter(Counters.NUM_HTTP_RESPONSE_RECORDS).increment(1);
@@ -65,7 +92,6 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 					} else {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
 						if (warcContent == null && "".equals(warcContent)) {
-							// NOP
 						} else {
 							Document doc = Jsoup.parse(warcContent);
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(doc);
@@ -76,7 +102,9 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 								} catch (LangDetectException e) {
 									e.printStackTrace();
 								}
+
 								String country = ld.getCountry(value);
+								
 								for(String a : addresses) {
 									Text addr = new Text(a);
 									if(!country.isEmpty())

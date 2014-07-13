@@ -34,13 +34,15 @@ public class LanguageDetecter
 	{
 		domain_map = loadDomainMap();
 		try {
-			ArrayList<String> res = new ArrayList<String>();
-			for(String lang : langs) {
-				InputStream is2 = getClass().getResourceAsStream("profiles/"+lang);
-				res.add(IOUtils.toString(is2, "UTF-8"));
-				is2.close();
+			if(DetectorFactory.getLangList().isEmpty()) {
+				ArrayList<String> res = new ArrayList<String>();
+				for(String lang : langs) {
+					InputStream is2 = getClass().getResourceAsStream("profiles/"+lang);
+					res.add(IOUtils.toString(is2, "UTF-8"));
+					is2.close();
+				}
+				DetectorFactory.loadProfile(res);
 			}
-			DetectorFactory.loadProfile(res);
 		} catch (Exception e) {System.out.println("Language detection failed error: 01");e.printStackTrace();}
 	}
 
