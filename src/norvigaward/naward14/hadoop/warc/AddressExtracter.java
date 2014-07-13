@@ -74,7 +74,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
 		String path = ((FileSplit)context.getInputSplit()).getPath() + " " + key.get();
-		System.out.println("Processing: " + path);
+		//System.out.println("Processing: " + path);
 		k++;
 		if(k > 1000) {
 			k = 0;
