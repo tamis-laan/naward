@@ -26,28 +26,24 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 			// count domain extensions of pages where address was found
 			if(s.contains("country:")) {
 				String ext = s.split("country:")[1];
-					if(ext.length() == 2) {
-					Integer n = countries.get(ext);
-					if(n == null) {
-						n = 0;
-					}
-					System.out.println("extracted: " + ext);
-					n++;
-					countries.put(ext, n);
+				Integer n = countries.get(ext);
+				if(n == null) {
+					n = 0;
 				}
+				System.out.println("extracted: " + ext);
+				n++;
+				countries.put(ext, n);
 			}
 			// count detected languages of pages where address was found
 			if(s.contains("language:")) {
 				String lang = s.split("language:")[1];
-				if(lang.length() == 2) {
-					Integer n = langs.get(lang);
-					if(n == null) {
-						n = 0;
-					}
-					System.out.println("extracted: " + lang);
-					n++;
-					langs.put(lang, n);
+				Integer n = langs.get(lang);
+				if(n == null) {
+					n = 0;
 				}
+				System.out.println("extracted: " + lang);
+				n++;
+				langs.put(lang, n);
 			}
 		}
 		
