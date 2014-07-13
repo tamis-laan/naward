@@ -24,6 +24,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
 import org.apache.hadoop.util.Tool;
 
 
@@ -42,6 +43,7 @@ public class BitcoinAddresses extends Configured implements Tool {
 
 		job.setMapperClass(AddressExtracter.class);
 		job.setReducerClass(AddressReducer.class);
+		job.setPartitionerClass(HashPartitioner.class);
 		job.setNumReduceTasks(40);
 		
 		job.setInputFormatClass(WarcSequenceFileInputFormat.class);
