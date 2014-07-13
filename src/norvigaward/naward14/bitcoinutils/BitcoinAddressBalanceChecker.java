@@ -8,7 +8,7 @@ public class BitcoinAddressBalanceChecker {
 	private static String SentAPI = "https://blockchain.info/q/getsentbyaddress/";
 	private static String ReceivedAPI = "https://blockchain.info/q/getreceivedbyaddress/";
 	private static String APIKEY = "?api_code=8c06bbb8-22c1-4a09-8fc0-e65a362b895e";
-	private static int timeout = 1000;
+	private static int timeout = 2000;
 	
 	public static void main(String[] args) {
 		System.out.println(getBalance("19CWNopXCHSwWtWQ89NHC471LMn2Gy5j5G"));

@@ -48,8 +48,8 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 	
 	LanguageDetecter ld = new LanguageDetecter();
     Runtime runtime = Runtime.getRuntime();
-    long tick = 0;
-    long lastkey = 0;
+    long tick = System.currentTimeMillis();
+    int k = 0;
 	
 	private void printMem() {
         int mb = 1024*1024;
@@ -73,8 +73,9 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
-		if(key.get() - lastkey > 10000) {
-			lastkey = key.get();
+		k++;
+		if(k > 1000) {
+			k = 0;
 			printMem();
 			System.out.println("last 1000 maps: " + (System.currentTimeMillis() - tick));
 			tick = System.currentTimeMillis();
