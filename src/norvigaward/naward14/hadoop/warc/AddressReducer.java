@@ -31,6 +31,7 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 					if(n == null) {
 						n = 0;
 					}
+					System.out.println("extracted: " + ext);
 					n++;
 					countries.put(ext, n);
 				}
@@ -43,6 +44,7 @@ public class AddressReducer extends Reducer<Text, Text, Text, Text> {
 					if(n == null) {
 						n = 0;
 					}
+					System.out.println("extracted: " + lang);
 					n++;
 					langs.put(lang, n);
 				}
