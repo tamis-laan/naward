@@ -46,10 +46,10 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 		CURRENT_RECORD, NUM_HTTP_RESPONSE_RECORDS
 	}
 	
-	LanguageDetecter ld = new LanguageDetecter();
-    Runtime runtime = Runtime.getRuntime();
-    long tick = System.currentTimeMillis();
-    int k = 0;
+	LanguageDetecter ld;
+    Runtime runtime;
+    long tick;
+    int k;
 	
 	private void printMem() {
         int mb = 1024*1024;
@@ -70,12 +70,19 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
         //Print Maximum available memory
         System.out.println("Max Memory:" + runtime.maxMemory() / mb);
 	}
+	
+	@Override
+    public void setup(Context context) throws IOException, InterruptedException {
+		ld = new LanguageDetecter();
+		runtime = Runtime.getRuntime();
+		tick = System.currentTimeMillis();
+		k = 0;
+		String path = ((FileSplit)context.getInputSplit()).getPath().toString();
+		System.out.println("Processing: " + path);
+	}
 
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
-		String path = ((FileSplit)context.getInputSplit()).getPath() + " " + key.get();
-		//System.out.println("Processing: " + path);
-		k++;
 		if(k > 1000) {
 			k = 0;
 			printMem();
@@ -97,6 +104,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
 						if (warcContent == null && "".equals(warcContent)) {
 						} else {
+							k++;
 							Document doc = Jsoup.parse(warcContent);
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(doc);
 							if(!addresses.isEmpty()) {
@@ -113,7 +121,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 									Text addr = new Text(a);
 									if(!country.isEmpty())
 										context.write(addr, new Text("country:"+country));
-									if(!!lang.isEmpty())
+									if(!lang.isEmpty())
 										context.write(addr, new Text("language:"+lang));
 								}
 							}
