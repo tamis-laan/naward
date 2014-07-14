@@ -6,10 +6,6 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 public class BitcoinAddressFinder {
 
 	/**
@@ -18,11 +14,18 @@ public class BitcoinAddressFinder {
 	 * @return Collection of Strings that represent valid bitcoin addresses
 	 * @throws IOException 
 	 */
-	public static Collection<String> findBitcoinAddresses(Document doc) throws IOException
+	public static Collection<String> findBitcoinAddresses(String content) throws IOException
 	{
 		HashSet<String> res = new HashSet<String>();
 		Pattern bcpattern = Pattern.compile("(?i)bitcoin: *([a-z0-9]+)");
-		Elements links = doc.select("a");
+		Matcher m = bcpattern.matcher(content);
+		while(m.find()) {
+			if(BitcoinAddressValidator.validateAddress(m.group(1))) {
+				res.add(m.group(1));
+			}
+		}
+		
+		/*Elements links = doc.select("a");
 		for (Element link : links) {
 			// Find addresses in bitcoin URLs
 			Matcher m = bcpattern.matcher(link.attr("href"));
@@ -48,10 +51,8 @@ public class BitcoinAddressFinder {
 			if(BitcoinAddressValidator.validateAddress(w)) {
 				res.add(w);
 			}
-		}
+		}*/
+		
 		return res;
 	}
-	
-	
-
 }

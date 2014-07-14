@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
+import org.cyberneko.html.parsers.DOMParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jwat.common.HeaderLine;
@@ -326,14 +327,16 @@ public class LanguageDetecter
 		return map;
 	}
 	
-	public String getLang(Document doc) throws IOException, LangDetectException
+	public String getLang(String content) throws IOException, LangDetectException
 	{
 		String lang = "?";
 		detector = DetectorFactory.create();
-		try{
-			detector.append(doc.body().text());
+		try {
+			detector.append(content);
 			lang =  detector.detect();
-		} catch(Exception e){e.printStackTrace();}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		return lang;
 	}
 
@@ -352,8 +355,9 @@ public class LanguageDetecter
 					
 			return lang;
 		}
-		else
+		else {
 			return "?";
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -376,8 +380,18 @@ public class LanguageDetecter
 								if (warcContent == null && "".equals(warcContent)) {
 									// NOP
 								} else {
+									long tick = System.currentTimeMillis();
 									Document doc = Jsoup.parse(warcContent);
+									System.out.print("JSOUP Contentsize: " + warcContent.length() + " ");
+									System.out.println("Parsetime: " + (System.currentTimeMillis() - tick));
 									System.out.println(ld.getCountry(record));
+									
+									tick = System.currentTimeMillis();
+									DOMParser parser = new DOMParser();
+									parser.parse(warcContent);		
+									org.w3c.dom.Document doc2 = parser.getDocument();
+									System.out.print("NEKO Contentsize: " + warcContent.length() + " ");
+									System.out.println("Parsetime: " + (System.currentTimeMillis() - tick));
 								}
 							}
 						}

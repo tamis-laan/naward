@@ -102,15 +102,15 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 					if (payload == null) {
 					} else {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
-						if (warcContent == null && "".equals(warcContent)) {
+						if (warcContent == null || warcContent.isEmpty()) {
 						} else {
 							k++;
-							Document doc = Jsoup.parse(warcContent);
-							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(doc);
+							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(warcContent);
 							if(!addresses.isEmpty()) {
+								String body = Jsoup.parse(warcContent).body().text();
 								String lang = "?";
 								try {
-									lang = ld.getLang(doc);
+									lang = ld.getLang(body);
 								} catch (LangDetectException e) {
 									e.printStackTrace();
 								}
