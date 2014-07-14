@@ -98,8 +98,8 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 							k++;
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(warcContent);
 							if(!addresses.isEmpty()) {
-								String body = Jsoup.parse(warcContent).body().text();
-								String lang = "?";
+								String body = Jsoup.parse(warcContent).text();
+								String lang = "";
 								try {
 									lang = ld.getLang(body);
 								} catch (LangDetectException e) {
