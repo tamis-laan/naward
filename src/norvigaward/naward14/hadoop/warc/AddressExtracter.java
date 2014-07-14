@@ -22,25 +22,16 @@ import norvigaward.naward14.bitcoinutils.BitcoinAddressFinder;
 import norvigaward.naward14.languagetools.LanguageDetecter;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jwat.common.HttpHeader;
 import org.jwat.common.Payload;
 import org.jwat.warc.WarcRecord;
 
 import com.cybozu.labs.langdetect.LangDetectException;
-
-/**
- * Map function that from a WarcRecord extracts all links. The resulting key,
- * values: page URL, link.
- * 
- * @author mathijs.kattenberg@surfsara.nl
- */
 class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 	private static enum Counters {
 		CURRENT_RECORD, NUM_HTTP_RESPONSE_RECORDS
