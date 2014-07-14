@@ -11,19 +11,19 @@ bitcoins = json.load(file)
 
 for bitcoin in bitcoins:
 	for country in bitcoins[bitcoin]["countries"]:
-		total_balance += bitcoins[bitcoin]["balance"]
-		if bitcoins[bitcoin]["balance"]<min_balance:
-			min_balance = bitcoins[bitcoin]["balance"]
-		if bitcoins[bitcoin]["balance"]>max_balance:
-			max_balance = bitcoins[bitcoin]["balance"]
+		balance = float(bitcoins[bitcoin]["balance"])	
+		if(max_balance<balance):
+			max_balance = balance
+		if(min_balance>balance):
+			min_balance = balance
 		try:
 			country_list[country]["balance"] += bitcoins[bitcoin]["balance"]
 			country_list[country]["lang"] += bitcoins[bitcoin]["langs"]
 		except Exception, e:
 			country_list[country]["balance"] = bitcoins[bitcoin]["balance"]
 			country_list[country]["lang"] = bitcoins[bitcoin]["langs"]
-		
-stats = {"min_balance":min_balance,"max_balance":0,"total_balance":total_balance}
+
+stats = {"min balance":min_balance,"max balance":max_balance,"total balance":total_balance}
 out = {"stats":stats,"country list":country_list}
 
 print out
