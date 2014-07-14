@@ -16,6 +16,7 @@ for bitcoin in bitcoins:
 			max_balance = balance
 		if(min_balance>balance):
 			min_balance = balance
+		total_balance+=balance
 		try:
 			country_list[country]["balance"] += bitcoins[bitcoin]["balance"]
 			country_list[country]["lang"] += bitcoins[bitcoin]["langs"]
