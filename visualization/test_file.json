@@ -1,0 +1,5 @@
+{ 
+	"test1":{"balance":0,"countries":{"Belgium":1},"address":"12UA5vCiHdVRU5BgR8xmT64xrzFm1Jc5o3","langs":{"en":3}},
+	"test2":{"balance":0.02301029,"countries":{"Netherlands":1},"address":"12hMatA66sNrCoApgaTsvWjk1QYTW1ZDaM","langs":{"en":5}},
+	"test3":{"balance":0.02141048,"countries":{"Netherlands":2},"address":"13vYNWKj3npQTYr7EJVBhcoVkwncEbDUvJ","langs":{"en":4}} 
+}

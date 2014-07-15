@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
-import org.cyberneko.html.parsers.DOMParser;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jwat.common.HeaderLine;
 import org.jwat.common.HttpHeader;
 import org.jwat.common.Payload;
@@ -380,18 +377,7 @@ public class LanguageDetecter
 								if (warcContent == null && "".equals(warcContent)) {
 									// NOP
 								} else {
-									long tick = System.currentTimeMillis();
-									Document doc = Jsoup.parse(warcContent);
-									System.out.print("JSOUP Contentsize: " + warcContent.length() + " ");
-									System.out.println("Parsetime: " + (System.currentTimeMillis() - tick));
 									System.out.println(ld.getCountry(record));
-									
-									tick = System.currentTimeMillis();
-									DOMParser parser = new DOMParser();
-									parser.parse(warcContent);		
-									org.w3c.dom.Document doc2 = parser.getDocument();
-									System.out.print("NEKO Contentsize: " + warcContent.length() + " ");
-									System.out.println("Parsetime: " + (System.currentTimeMillis() - tick));
 								}
 							}
 						}

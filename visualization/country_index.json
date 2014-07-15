@@ -1,0 +1,5 @@
+{
+	"country list": {
+		"France": {"received": 0.17848815, "balance": 0.00224, "links": 5, "sent": 0.17624815}, 
+		"Sweden": {"received": 71.90813808, "balance": 3.11312991, "links": 3, "sent": 68.79500817}}, 
+		"stats": {"max sent": 68.79500817, "max balance": 3.11312991, "total sent": 68.97125632000001, "max average balance": 3.11312991, "max links": 8, "min sent": 0.17624815, "max received": 71.90813808, "total number of links": 2, "min received": 0.17848815, "total received": 72.08662623000001, "min average balance": 0.00224, "total balance": 3.11536991, "min links": 1, "min balance": 0.00224}}
