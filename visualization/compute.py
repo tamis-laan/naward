@@ -6,19 +6,19 @@ min_balance   =  9999999999999
 max_balance   = -9999999999999
 total_balance = 0;
 
-file = open('./test_file.json')
+file = open('./bitcoinjson129.json')
 bitcoins = json.load(file)
 
 for bitcoin in bitcoins:
 	for country in bitcoins[bitcoin]["countries"]:
 		total_balance+=float(bitcoins[bitcoin]["balance"])
 		if country in country_list and not (country_list[country] is None):
-			country_list[country]["balance"] += bitcoins[bitcoin]["balance"]
+			country_list[country]["balance"] += float(bitcoins[bitcoin]["balance"])
 		else:
 			country_list[country] = {};
-			country_list[country]["balance"] = bitcoins[bitcoin]["balance"]
+			country_list[country]["balance"] = float(bitcoins[bitcoin]["balance"])
 for country in country_list:
-	balance  = float(country_list[country]["balance"])
+	balance  = country_list[country]["balance"]
 	if(balance<min_balance):
 		min_balance = balance;
 	if(balance>max_balance):
