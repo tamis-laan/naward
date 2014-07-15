@@ -25,7 +25,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.jsoup.Jsoup;
 import org.jwat.common.HttpHeader;
 import org.jwat.common.Payload;
@@ -65,22 +64,22 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 	@Override
     public void setup(Context context) throws IOException, InterruptedException {
 		ld = new LanguageDetecter();
-		runtime = Runtime.getRuntime();
+		/*runtime = Runtime.getRuntime();
 		tick = System.currentTimeMillis();
 		k = 0;
 		String path = ((FileSplit)context.getInputSplit()).getPath().toString();
-		System.out.println("Processing: " + path);
+		System.out.println("Processing: " + path);*/
 	}
 
 	@Override
 	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
-		if(k > 1000) {
+		/*if(k > 1000) {
 			k = 0;
 			printMem();
 			System.out.println("last 1000 maps: " + (System.currentTimeMillis() - tick));
 			tick = System.currentTimeMillis();
 			System.out.println();
-		}
+		}*/
 		
 		context.setStatus(Counters.CURRENT_RECORD + ": " + key.get());
 		if ("application/http; msgtype=response".equals(value.header.contentTypeStr)) {
@@ -95,7 +94,7 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
 						if (warcContent == null || warcContent.isEmpty()) {
 						} else {
-							k++;
+							//k++;
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(warcContent);
 							if(!addresses.isEmpty()) {
 								String body = Jsoup.parse(warcContent).text();

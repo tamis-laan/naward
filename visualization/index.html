@@ -22,21 +22,15 @@
         z-index: 1;
 	}
     
-    #chart{
+    #dropdown{
         font-size:10px;
         text-transform:capitalize;
         width: 300;
         height: 300;
         position: absolute;
         top: 0%;
-        left: 70%;
-        background: #FFFFFF;
-        stroke: #000000;
-		stroke-width: 1.5px;
+        left: 50%;
         z-index: 2;
-        border-width:3px;
-        border-style:solid;
-        border-color:#333333;
         opacity: 1.0; 
     }
 	
@@ -74,24 +68,41 @@
         left: 0;
         top: 0;
     }
+    
+    #chart{
+        font-size:10px;
+        background: #000000; 
+        text-transform:capitalize;
+        position: absolute;
+        top: 100%;
+        right: 0%;
+        z-index: 2;
+        opacity: 1.0; 
+    }
 
 </style>
 </head>
 <body>
 
 	<div id="container" class='overlay'></div>
-    <div id="chart"></div>
-
+    <div id="chart">DGAFSFSAFASFASF</div>
+    <div id="dropdown"><select><option>Total</option><option>Sent</option><option>Received</option></select></div>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
 		d3.select(window).on("resize", throttle);
 
 		var zoom = d3.behavior.zoom()
 		.scaleExtent([1, 9])
 		.on("zoom", move);
-
-
+        
+        var countrylist;
+        var langlist;
+        var langstats;
+        var stats;
+        var colorScale;
+        
 		var width = document.getElementById('container').offsetWidth;
 		var height = width / 2;
 
@@ -120,23 +131,70 @@
 			g = svg.append("g");
 
 		}
-
-		d3.json("world.json", function(error, world) {
-
-			var countries = topojson.feature(world, world.objects.countries).features;
-
-			topo = countries;
-			draw(topo);
-
-		});
-        
-        d3.json("country_index.json", function(error,countries)
-        {
-            for(var country in countries)
-                console.log(country)
-            console.log(svg)
+  
+        d3.json("country_index.json", function(error, data) {         
+            countrylist = data["country list"];
+            stats = data["stats"];
+            colorScale = d3.scale.linear()
+                                .range(['grey', 'red'])
+                                .domain([stats["min balance"], stats["max balance"]]);
+                                         
+            d3.json("world.json", function(error, world) {
+                var countries = topojson.feature(world, world.objects.countries).features;
+                topo = countries;
+                draw(topo);
+            });
         });
+        
+        d3.json("language_index.json", function(error, data) {         
+            langlist = data["language list"];
+            langstats = data["stats"];     
+            drawPie(langlist);
+        });
+        
+        function drawPie(data) {
+            console.log(data);
+            var width = 960,
+            height = 500,
+            radius = Math.min(width, height) / 2;
+            
+            dataarray = [];
+            for(var country in data) {
+                dataarray.push(data[country]);
+            }
+            console.log(dataarray);
 
+            var color = d3.scale.category20();
+
+            var arc = d3.svg.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(0);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.balance });
+
+            var svg = d3.select("#chart").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+              .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+              var g = svg.selectAll(".arc")
+                  .data(pie(data))
+                .enter().append("g")
+                  .attr("class", "arc");
+
+              g.append("path")
+                  .attr("d", arc)
+                  .style("fill", function(d) { console.log("FUKYU " + d); return color(d.key); });
+
+              g.append("text")
+                  .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                  .attr("dy", ".35em")
+                  .style("text-anchor", "middle")
+                  .text(function(d) { return (d.balance / langstats["total balance"]) });
+        }
+        
 		function draw(topo) {
 
 			svg.append("path")
@@ -159,41 +217,37 @@
 			.attr("id", function(d,i) { return d.id; })
 			.attr("title", function(d,i) { return d.properties.name; })
             .attr("fill", "gray")
-			.style("fill", function(d, i) { return d.properties.color; });
-            
+            .attr("balance", function(d, i) { if(countrylist[d.properties.name]) { return colorScale(countrylist[d.properties.name].balance) } })
+			.style("fill", function(d, i) { if(countrylist[d.properties.name]) { return colorScale(countrylist[d.properties.name].balance) }; return "grey" });
 
+              //offsets for tooltips
+              var offsetL = document.getElementById('container').offsetLeft+20;
+              var offsetT = document.getElementById('container').offsetTop+10;
 
-  //offsets for tooltips
-  var offsetL = document.getElementById('container').offsetLeft+20;
-  var offsetT = document.getElementById('container').offsetTop+10;
+              //tooltips
+              country.on("mousemove", function(d,i) {
 
-  //tooltips
-  country
-  .on("mousemove", function(d,i) {
+                var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
+                  
+                var tooltiptext = d.properties.name;
+                if(countrylist[d.properties.name]) { 
+                    tooltiptext = tooltiptext + " balance: " + (countrylist[d.properties.name].balance/stats["total balance"]*100+"%"); 
+                }
+                else
+                {
+                     tooltiptext = tooltiptext + " balance: 0%";
+                }
 
-  	var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
+                tooltip.classed("hidden", false)
+                .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
+                .html(tooltiptext);
 
-  	tooltip.classed("hidden", false)
-  	.attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
-  	.html(d.properties.name);
+              })
+              .on("mouseout",  function(d,i) {
+                tooltip.classed("hidden", true);
+              }); 
 
-  })
-  .on("mouseout",  function(d,i) {
-  	tooltip.classed("hidden", true);
-  }); 
-
-
-  //EXAMPLE: adding some capitals from external CSV file
-  d3.csv("data/country-capitals.csv", function(err, capitals) {
-
-  	capitals.forEach(function(i){
-  		addpoint(i.CapitalLongitude, i.CapitalLatitude, i.CapitalName );
-  	});
-
-  });
-
-}
-
+            }
 
 function redraw() {
 	width = document.getElementById('container').offsetWidth;
@@ -273,35 +327,6 @@ function addpoint(lat,lon,text) {
 
 }
 </script>
-    
-<script src="RadarChart.js"></script>
-<script>  
-    Code:
-    d = [
-         [
-               {axis: "strength", value: 13}, 
-               {axis: "intelligence", value: 1}, 
-               {axis: "charisma", value: 8},  
-               {axis: "dexterity", value: 4},  
-               {axis: "luck", value: 9}
-              ],[
-               {axis: "strength", value: 3}, 
-               {axis: "intelligence", value: 15}, 
-               {axis: "charisma", value: 4}, 
-               {axis: "dexterity", value: 1},  
-               {axis: "luck", value: 15}
-              ],[
-               {axis: "strength", value: 5}, 
-               {axis: "intelligence", value: 1}, 
-               {axis: "charisma", value: 16}, 
-               {axis: "dexterity", value: 10},  
-               {axis: "luck", value: 5}
-         ]
-    ];
-    var mycfg = {w: 300,h: 300}
-    RadarChart.draw("#chart", d, mycfg);
-</script>
-    
     
 </body>
 </html>
