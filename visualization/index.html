@@ -71,7 +71,7 @@
     
     #chart{
         font-size:10px;
-        background: #000000; 
+        /*background: #000000;*/ 
         text-transform:capitalize;
         position: absolute;
         top: 100%;
@@ -85,7 +85,7 @@
 <body>
 
 	<div id="container" class='overlay'></div>
-    <div id="chart">DGAFSFSAFASFASF</div>
+    <div id="chart"></div>
     <div id="dropdown"><select><option>Total</option><option>Sent</option><option>Received</option></select></div>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
@@ -153,16 +153,16 @@
         });
         
         function drawPie(data) {
-            console.log(data);
             var width = 960,
             height = 500,
             radius = Math.min(width, height) / 2;
             
             dataarray = [];
-            for(var country in data) {
-                dataarray.push(data[country]);
+            for(var lang in data) {
+                c = data[lang];
+                c.name = lang;
+                dataarray.push(c);
             }
-            console.log(dataarray);
 
             var color = d3.scale.category20();
 
@@ -180,19 +180,19 @@
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
               var g = svg.selectAll(".arc")
-                  .data(pie(data))
+                  .data(pie(dataarray))
                 .enter().append("g")
                   .attr("class", "arc");
 
               g.append("path")
                   .attr("d", arc)
-                  .style("fill", function(d) { console.log("FUKYU " + d); return color(d.key); });
+                  .style("fill", function(d) { return color(d.data.name); });
 
               g.append("text")
                   .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
                   .attr("dy", ".35em")
                   .style("text-anchor", "middle")
-                  .text(function(d) { return (d.balance / langstats["total balance"]) });
+                  .text(function(d) { return d.data.name + " " + (d.data.balance / langstats["total balance"]) * 100 + "%" });
         }
         
 		function draw(topo) {
@@ -257,7 +257,6 @@ function redraw() {
 	draw(topo);
 }
 
-
 function move() {
 
 	var t = d3.event.translate;
@@ -284,8 +283,6 @@ function move() {
 
 }
 
-
-
 var throttleTimer;
 function throttle() {
 	window.clearTimeout(throttleTimer);
@@ -294,37 +291,9 @@ function throttle() {
 	}, 200);
 }
 
-
-//geo translation on mouse click in map
 function click() {
-	var latlon = projection.invert(d3.mouse(this));
-	console.log(latlon);
-}
-
-
-//function to add points and text to the map (used in plotting capitals)
-function addpoint(lat,lon,text) {
-
-	var gpoint = g.append("g").attr("class", "gpoint");
-	var x = projection([lat,lon])[0];
-	var y = projection([lat,lon])[1];
-
-	gpoint.append("svg:circle")
-	.attr("cx", x)
-	.attr("cy", y)
-	.attr("class","point")
-	.attr("r", 1.5);
-
-  //conditional in case a point has no associated text
-  if(text.length>0){
-
-  	gpoint.append("text")
-  	.attr("x", x+2)
-  	.attr("y", y+2)
-  	.attr("class","text")
-  	.text(text);
-  }
-
+	//var latlon = projection.invert(d3.mouse(this));
+	//console.log(latlon);
 }
 </script>
     
