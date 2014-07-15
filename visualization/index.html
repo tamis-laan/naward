@@ -23,13 +23,13 @@
 	}
     
     #dropdown{
-        font-size:10px;
+        font-size:16px;
         text-transform:capitalize;
         width: 300;
         height: 300;
         position: absolute;
         top: 0%;
-        left: 50%;
+        left: 45%;
         z-index: 2;
         opacity: 1.0; 
     }
@@ -74,7 +74,7 @@
         /*background: #000000;*/ 
         text-transform:capitalize;
         position: absolute;
-        top: 100%;
+        bottom: 0%;
         right: 0%;
         z-index: 2;
         opacity: 1.0; 
@@ -83,10 +83,37 @@
 </style>
 </head>
 <body>
+    
+    <script> var selection_map = 0;</script>
+    <div id="dropdown">
+        map:<select id="Ultra" onchange="drop()">  
+            <option value="0">Total Balance</option>
+            <option value="1">Average Balance</option>
+            <option value="2">Incoming transactions</option>
+            <option value="3">Outgoing transactions</option>
+            <option value="4">Number of bitcoin links</option>
+        </select>
+    </div>
+    <script>
+    function drop() {
+        selection_map = document.getElementById("Ultra").value;
+        if(selection_map==0)
+            colorScale.domain([stats["min balance"], stats["max balance"]]);
+        if(selection_map==1)
+            colorScale.domain([stats["min average balance"], stats["max average balance"]]);
+        if(selection_map==2)
+            colorScale.domain([stats["min received"], stats["max received"]]);
+        if(selection_map==3)
+            colorScale.domain([stats["min sent"], stats["max sent"]]);
+        if(selection_map==4)
+            colorScale.domain([stats["min links"], stats["max links"]]);
+        
+        redraw();
+    }
+    </script>
 
 	<div id="container" class='overlay'></div>
     <div id="chart"></div>
-    <div id="dropdown"><select><option>Total</option><option>Sent</option><option>Received</option></select></div>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -153,8 +180,8 @@
         });
         
         function drawPie(data) {
-            var width = 960,
-            height = 500,
+            var width = 325,
+            height = 325,
             radius = Math.min(width, height) / 2;
             
             dataarray = [];
@@ -196,7 +223,7 @@
         }
         
 		function draw(topo) {
-
+            
 			svg.append("path")
 			.datum(graticule)
 			//.attr("class", "graticule")
@@ -217,8 +244,21 @@
 			.attr("id", function(d,i) { return d.id; })
 			.attr("title", function(d,i) { return d.properties.name; })
             .attr("fill", "gray")
-            .attr("balance", function(d, i) { if(countrylist[d.properties.name]) { return colorScale(countrylist[d.properties.name].balance) } })
-			.style("fill", function(d, i) { if(countrylist[d.properties.name]) { return colorScale(countrylist[d.properties.name].balance) }; return "grey" });
+            .attr("balance", function(d, i) { if(countrylist[d.properties.name]) 
+            { 
+                if(selection_map==0) {return colorScale(countrylist[d.properties.name].balance)}
+                if(selection_map==1) {return colorScale(countrylist[d.properties.name].balance/countrylist[d.properties.name].links)}
+                if(selection_map==2) {return colorScale(countrylist[d.properties.name].received)}
+                if(selection_map==3) {return colorScale(countrylist[d.properties.name].sent)}
+                if(selection_map==4) {return colorScale(countrylist[d.properties.name].links)}
+            } })
+			.style("fill", function(d, i) { if(countrylist[d.properties.name]) { 
+                if(selection_map==0) {return colorScale(countrylist[d.properties.name].balance)}
+                if(selection_map==1) {return colorScale(countrylist[d.properties.name].balance/countrylist[d.properties.name].links)}
+                if(selection_map==2) {return colorScale(countrylist[d.properties.name].received)}
+                if(selection_map==3) {return colorScale(countrylist[d.properties.name].sent)}
+                if(selection_map==4) {return colorScale(countrylist[d.properties.name].links)}
+            }; return "grey" });
 
               //offsets for tooltips
               var offsetL = document.getElementById('container').offsetLeft+20;
