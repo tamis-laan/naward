@@ -107,7 +107,6 @@
             colorScale.domain([stats["min sent"], stats["max sent"]]);
         if(selection_map==4)
             colorScale.domain([stats["min links"], stats["max links"]]);
-        
         redraw();
     }
     </script>
@@ -243,15 +242,6 @@
 			.attr("d", path)
 			.attr("id", function(d,i) { return d.id; })
 			.attr("title", function(d,i) { return d.properties.name; })
-            .attr("fill", "gray")
-            .attr("balance", function(d, i) { if(countrylist[d.properties.name]) 
-            { 
-                if(selection_map==0) {return colorScale(countrylist[d.properties.name].balance)}
-                if(selection_map==1) {return colorScale(countrylist[d.properties.name].balance/countrylist[d.properties.name].links)}
-                if(selection_map==2) {return colorScale(countrylist[d.properties.name].received)}
-                if(selection_map==3) {return colorScale(countrylist[d.properties.name].sent)}
-                if(selection_map==4) {return colorScale(countrylist[d.properties.name].links)}
-            } })
 			.style("fill", function(d, i) { if(countrylist[d.properties.name]) { 
                 if(selection_map==0) {return colorScale(countrylist[d.properties.name].balance)}
                 if(selection_map==1) {return colorScale(countrylist[d.properties.name].balance/countrylist[d.properties.name].links)}
@@ -296,7 +286,7 @@ function redraw() {
 	setup(width,height);
 	draw(topo);
 }
-
+            
 function move() {
 
 	var t = d3.event.translate;
