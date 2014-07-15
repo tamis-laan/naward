@@ -22,21 +22,22 @@ bitcoins = json.load(file)
 
 for bitcoin in bitcoins:
 	for country in bitcoins[bitcoin]["countries"]:
-		total_balance+=float(bitcoins[bitcoin]["balance"])
-		total_sent+=float(bitcoins[bitcoin]["sent"])
-		total_received+=float(bitcoins[bitcoin]["received"])
-		total_links+=1
-		if country in country_list and not (country_list[country] is None):
-			country_list[country]["balance"] += float(bitcoins[bitcoin]["balance"])
-			country_list[country]["sent"] += float(bitcoins[bitcoin]["sent"])
-			country_list[country]["received"] += float(bitcoins[bitcoin]["received"])
-			country_list[country]["links"]   += 1
-		else:
-			country_list[country] = {};
-			country_list[country]["balance"] = float(bitcoins[bitcoin]["balance"])
-			country_list[country]["sent"] = float(bitcoins[bitcoin]["sent"])
-			country_list[country]["received"] = float(bitcoins[bitcoin]["received"])
-			country_list[country]["links"] = 1
+		if country != "UNKNOWN":
+			total_balance+=float(bitcoins[bitcoin]["balance"])
+			total_sent+=float(bitcoins[bitcoin]["sent"])
+			total_received+=float(bitcoins[bitcoin]["received"])
+			total_links+=1
+			if country in country_list and not (country_list[country] is None):
+				country_list[country]["balance"] += float(bitcoins[bitcoin]["balance"])
+				country_list[country]["sent"] += float(bitcoins[bitcoin]["sent"])
+				country_list[country]["received"] += float(bitcoins[bitcoin]["received"])
+				country_list[country]["links"]   += 1
+			else:
+				country_list[country] = {};
+				country_list[country]["balance"] = float(bitcoins[bitcoin]["balance"])
+				country_list[country]["sent"] = float(bitcoins[bitcoin]["sent"])
+				country_list[country]["received"] = float(bitcoins[bitcoin]["received"])
+				country_list[country]["links"] = 1
 for country in country_list:
 	balance  = country_list[country]["balance"]
 	if(balance<min_balance):
@@ -63,7 +64,6 @@ for country in country_list:
 		min_links = links;
 	if(links>max_links):
 		max_links = links;
-
 
 stats = {"min links":min_links,"max links":max_links,"min received":min_received,"max received":max_received,"min sent":min_sent,"max sent":max_sent,"min balance":min_balance,"max balance":max_balance,"min average balance":min_average_balance,"max average balance":max_average_balance,"total balance":total_balance,"total sent":total_sent,"total received":total_received,"total number of links":total_links}
 out = {"stats":stats,"country list":country_list}
