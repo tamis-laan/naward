@@ -17,7 +17,7 @@ total_sent	   = 0;
 total_received = 0;
 total_links    = 0;
 
-file = open('./bitcoinjson129.json')
+file = open('./results.json')
 bitcoins = json.load(file)
 
 for bitcoin in bitcoins:
