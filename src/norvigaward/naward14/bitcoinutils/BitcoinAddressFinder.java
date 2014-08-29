@@ -25,7 +25,8 @@ public class BitcoinAddressFinder {
 			}
 		}
 		
-		/*Elements links = doc.select("a");
+		/*
+		Elements links = doc.select("a");
 		for (Element link : links) {
 			// Find addresses in bitcoin URLs
 			Matcher m = bcpattern.matcher(link.attr("href"));
@@ -44,14 +45,15 @@ public class BitcoinAddressFinder {
 			if (BitcoinAddressValidator.validateAddress(link.text())) {
 				res.add(link.text());
 			}
-		}
+		}*/
+		
 		// Search all words in the body (separated by spaces) for valid bitcoin addresses
-		String[] bodywords = doc.body().text().split(" ");
+		String[] bodywords = content.split(" ");
 		for (String w : bodywords) {
 			if(BitcoinAddressValidator.validateAddress(w)) {
 				res.add(w);
 			}
-		}*/
+		}
 		
 		return res;
 	}

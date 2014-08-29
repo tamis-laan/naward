@@ -41,46 +41,13 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
     long tick;
     int k;
 	
-	private void printMem() {
-        int mb = 1024*1024;
-       
-        System.out.println("##### Heap utilization statistics [MB] #####");
-         
-        //Print used memory
-        System.out.println("Used Memory:"
-            + (runtime.totalMemory() - runtime.freeMemory()) / mb);
- 
-        //Print free memory
-        System.out.println("Free Memory:"
-            + runtime.freeMemory() / mb);
-         
-        //Print total available memory
-        System.out.println("Total Memory:" + runtime.totalMemory() / mb);
- 
-        //Print Maximum available memory
-        System.out.println("Max Memory:" + runtime.maxMemory() / mb);
-	}
-	
 	@Override
     public void setup(Context context) throws IOException, InterruptedException {
 		ld = new LanguageDetecter();
-		/*runtime = Runtime.getRuntime();
-		tick = System.currentTimeMillis();
-		k = 0;
-		String path = ((FileSplit)context.getInputSplit()).getPath().toString();
-		System.out.println("Processing: " + path);*/
 	}
 
 	@Override
-	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {
-		/*if(k > 1000) {
-			k = 0;
-			printMem();
-			System.out.println("last 1000 maps: " + (System.currentTimeMillis() - tick));
-			tick = System.currentTimeMillis();
-			System.out.println();
-		}*/
-		
+	public void map(LongWritable key, WarcRecord value, Context context) throws IOException, InterruptedException {	
 		context.setStatus(Counters.CURRENT_RECORD + ": " + key.get());
 		if ("application/http; msgtype=response".equals(value.header.contentTypeStr)) {
 			HttpHeader httpHeader = value.getHttpHeader();
@@ -94,7 +61,6 @@ class AddressExtracter extends Mapper<LongWritable, WarcRecord, Text, Text> {
 						String warcContent = IOUtils.toString(payload.getInputStreamComplete());
 						if (warcContent == null || warcContent.isEmpty()) {
 						} else {
-							//k++;
 							Collection<String> addresses = BitcoinAddressFinder.findBitcoinAddresses(warcContent);
 							if(!addresses.isEmpty()) {
 								String body = Jsoup.parse(warcContent).text();
