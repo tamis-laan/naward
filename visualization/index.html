@@ -70,32 +70,32 @@
     
     #chart{
         font-size:10px;
-        /*background: #000000;*/ 
         text-transform:capitalize;
         position: absolute;
-        bottom: 0%;
-        right: 0%;
+        display:none;
+        bottom: 100px;
+        width: 800px;
+        margin: 0 auto;
         z-index: 2;
-        opacity: 1.0; 
+    }
+    
+    #pieToggle {
+        position: absolute;
+        bottom: 70px;
+        left: 5%;
+        z-index: 2;
     }
     
     .legend {
-  background-color: #000000;
-  width: 300px;
-  height: 60px;
-  border: 1px solid #bbb;
-  margin: 10px;
-        z-index: 3;
-        opacity: 1.0; 
-}
+      width: 90%;
+      height: 60px;
+      position:absolute;
+        left: 5%;
+        bottom: 0px;
+      z-index: 2;
+        background-color: #fff;
+    }
     
-    #linearLegend .colorlegend-labels {
-  font-size: 9px;
-  fill: #888;
-        z-index: 3;
-        opacity: 1.0; 
-}
-
 </style>
 </head>
 <body>
@@ -115,21 +115,23 @@
     function drop() {
         selection_map = document.getElementById("Ultra").value;
         if(selection_map==0)
-            colorScale.domain([stats["min balance"], stats["max balance"]]);
+            setColorScale(stats["min balance"], stats["max balance"]);
         if(selection_map==1)
-            colorScale.domain([stats["min average balance"], stats["max average balance"]]);
+            setColorScale(stats["min average balance"], stats["max average balance"]);
         if(selection_map==2)
-            colorScale.domain([stats["min received"], stats["max received"]]);
+            setColorScale(stats["min received"], stats["max received"]);
         if(selection_map==3)
-            colorScale.domain([stats["min sent"], stats["max sent"]]);
+            setColorScale(stats["min sent"], stats["max sent"]);
         if(selection_map==4)
-            colorScale.domain([stats["min links"], stats["max links"]]);
+            setColorScale(stats["min links"], stats["max links"]);
         redraw();
     }
     </script>
 
 	<div id="container" class='overlay'></div>
-    <div id="chart"></div>
+    
+    <input type="button" id="pieToggle" value="Show/Hide Language Pie" onclick="$('#chart').toggle(); $('#container').find('svg').toggle(); $('#linearLegend').toggle(); $('#dropdown').toggle()">
+    <div id="chart"><h1>Relative Bitcoin Balance per Language</h1></div>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -175,16 +177,21 @@
 			g = svg.append("g");
 
 		}
+        
+        function setColorScale(min, max) {
+            $('#linearLegend').find('svg').remove();
+            var r = (max - min)/4;
+            var m = min;
+            colorScale = d3.scale.linear() 
+                                .range(['#2E64FE','#00FF00','#BFFF00','#DF7401','#FF0000'])
+                                .domain([m, m+0.05*r, m+0.1*r, m+0.15*r, m+4*r]);
+            colorlegend("#linearLegend", colorScale, "linear", {title: "Legend", linearBoxes: 500}); 
+        }
   
         d3.json("country_index.json", function(error, data) {         
             countrylist = data["country list"];
             stats = data["stats"];
-            var r = (stats["max balance"]-stats["min balance"])/4;
-            var m = stats["min balance"];
-            colorScale = d3.scale.linear() 
-                                .range(['#2E64FE','#00FF00','#BFFF00','#DF7401','#FF0000'])
-                                .domain([m, m+0.05*r, m+0.1*r, m+0.15*r, m+4*r]);
-            colorlegend("#linearLegend", colorScale, "linear", {title: "linear"}); 
+            setColorScale(stats["min balance"], stats["max balance"]);
                                          
             d3.json("world.json", function(error, world) {
                 var countries = topojson.feature(world, world.objects.countries).features;
@@ -200,15 +207,17 @@
         });
         
         function drawPie(data) {
-            var width = 325,
-            height = 325,
+            var width = 800,
+            height = 800,
             radius = Math.min(width, height) / 2;
             
             dataarray = [];
             for(var lang in data) {
+                if(lang != 'en') {
                 c = data[lang];
                 c.name = lang;
                 dataarray.push(c);
+                }
             }
 
             var color = d3.scale.category20();
@@ -236,10 +245,11 @@
                   .style("fill", function(d) { return color(d.data.name); });
 
               g.append("text")
-                  .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                  .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 1.5; }) + ")"; })
                   .attr("dy", ".35em")
                   .style("text-anchor", "middle")
-                  .text(function(d) { return d.data.name + " " + (d.data.balance / langstats["total balance"]) * 100 + "%" });
+                  .style("font-size", "20px")
+                  .text(function(d) { return d.data.name });
         }
         
 		function draw(topo) {
@@ -281,12 +291,47 @@
                 var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
                   
                 var tooltiptext = d.properties.name;
-                if(countrylist[d.properties.name]) { 
-                    tooltiptext = tooltiptext + " balance: " + (countrylist[d.properties.name].balance/stats["total balance"]*100+"%"); 
-                }
-                else
-                {
-                     tooltiptext = tooltiptext + " balance: 0%";
+                  
+                if(selection_map==0) {
+                    if(countrylist[d.properties.name]) { 
+                        tooltiptext = tooltiptext + " balance: " + ((countrylist[d.properties.name].balance/stats["total balance"]*100).toFixed(4)+"%"); 
+                    }
+                    else
+                    {
+                         tooltiptext = tooltiptext + " balance: 0%";
+                    }
+                } else if (selection_map==1) {
+                    if(countrylist[d.properties.name]) { 
+                        tooltiptext = tooltiptext + " average balance: " + (((countrylist[d.properties.name].balance/countrylist[d.properties.name].links)/stats["max average balance"]*100).toFixed(4)+"%"); 
+                    }
+                    else
+                    {
+                         tooltiptext = tooltiptext + " average balance: 0%";
+                    }
+                } else if (selection_map==2) {
+                    if(countrylist[d.properties.name]) { 
+                        tooltiptext = tooltiptext + " received: " + ((countrylist[d.properties.name].received/stats["total received"]*100).toFixed(4)+"%"); 
+                    }
+                    else
+                    {
+                         tooltiptext = tooltiptext + " received: 0%";
+                    }
+                } else if (selection_map==3) {
+                    if(countrylist[d.properties.name]) { 
+                        tooltiptext = tooltiptext + " sent: " + ((countrylist[d.properties.name].sent/stats["total sent"]*100).toFixed(4)+"%"); 
+                    }
+                    else
+                    {
+                         tooltiptext = tooltiptext + " sent: 0%";
+                    }
+                } else if (selection_map==4) {
+                    if(countrylist[d.properties.name]) { 
+                        tooltiptext = tooltiptext + " relative # of addresses: " + ((countrylist[d.properties.name].links/stats["total number of links"]*100).toFixed(4)+"%"); 
+                    }
+                    else
+                    {
+                         tooltiptext = tooltiptext + " relative # of addresses: 0%";
+                    }
                 }
 
                 tooltip.classed("hidden", false)
@@ -303,35 +348,36 @@
 function redraw() {
 	width = document.getElementById('container').offsetWidth;
 	height = width / 2;
-	d3.select('svg').remove();
+	$('#container').find('svg').remove();
 	setup(width,height);
 	draw(topo);
 }
             
 function move() {
+    if($('#container').is(':visible')) {
 
-	var t = d3.event.translate;
-	var s = d3.event.scale; 
-	zscale = s;
-	var h = height/4;
+        var t = d3.event.translate;
+        var s = d3.event.scale; 
+        zscale = s;
+        var h = height/4;
 
 
-	t[0] = Math.min(
-		(width/height)  * (s - 1), 
-		Math.max( width * (1 - s), t[0] )
-		);
+        t[0] = Math.min(
+            (width/height)  * (s - 1), 
+            Math.max( width * (1 - s), t[0] )
+            );
 
-	t[1] = Math.min(
-		h * (s - 1) + h * s, 
-		Math.max(height  * (1 - s) - h * s, t[1])
-		);
+        t[1] = Math.min(
+            h * (s - 1) + h * s, 
+            Math.max(height  * (1 - s) - h * s, t[1])
+            );
 
-	zoom.translate(t);
-	g.attr("transform", "translate(" + t + ")scale(" + s + ")");
+        zoom.translate(t);
+        g.attr("transform", "translate(" + t + ")scale(" + s + ")");
 
-  //adjust the country hover stroke width based on zoom level
-  d3.selectAll(".country").style("stroke-width", 1.5 / s);
-
+      //adjust the country hover stroke width based on zoom level
+      d3.selectAll(".country").style("stroke-width", 1.5 / s);
+    }
 }
 
 var throttleTimer;
