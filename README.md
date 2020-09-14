@@ -1,2 +1,2 @@
-naward
+Peter Norvig Award
 ======
